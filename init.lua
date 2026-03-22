@@ -1,8 +1,3 @@
-require("gruvbox").setup({
-    contrast = "hard",
-    transparent_mode = true,
-})
-
 -- Basic options
 vim.o.termguicolors = true      -- full color support
 vim.o.number = true             -- line numbers
