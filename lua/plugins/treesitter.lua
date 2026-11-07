@@ -1,40 +1,36 @@
 return {
     {
         "nvim-treesitter/nvim-treesitter",
+        branch = "main",          -- explicit: you're on the new branch
         build = ":TSUpdate",
         config = function()
-            require("nvim-treesitter").setup({
-                -- Install all of these automatically
-                ensure_installed = {
-                    -- Your primary languages
-                    "c", "cpp", "java", "python", "bash",
-                    -- Web
-                    "html", "css", "javascript", "typescript",
-                    -- Config / markup
-                    "json", "jsonc", "yaml", "toml", "xml",
-                    "markdown", "markdown_inline",
-                    -- Shell / scripting
-                    "fish", "lua", "vim", "vimdoc",
-                    -- Systems
-                    "rust", "go", "zig", "dockerfile",
-                    -- Build systems
-                    "cmake", "make",
-                    -- Query language (treesitter itself)
-                    "query",
+            -- Parser installation is separate from feature activation.
+            -- You can also just run :TSInstall manually.
+            require("nvim-treesitter").install({
+                "c", "cpp", "java", "python", "bash",
+                "html", "css", "javascript", "typescript",
+                "json", "yaml", "toml", "xml",
+                "markdown", "markdown_inline",
+                "fish", "lua", "vim", "vimdoc",
+                "rust", "go", "zig", "dockerfile",
+                "cmake", "make", "query",
+            })
+
+            -- New main-branch API: setup() does NOT enable highlighting/indent.
+            require("nvim-treesitter").setup({})
+
+            -- Manually start Tree-sitter for the filetypes you care about.
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = {
+                    "python", "markdown", "lua", "vim", "bash",
+                    "javascript", "typescript", "c", "cpp",
+                    "java", "rust", "go", "zig", "yaml",
+                    "json", "toml", "html", "css", "xml",
                 },
-                auto_install = true,   -- install missing parsers automatically on open
-                highlight = {
-                    enable = true,
-                    -- Disable for very large files to avoid lag
-                    disable = function(_, buf)
-                        local max_filesize = 500 * 1024 -- 500 KB
-                        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-                        if ok and stats and stats.size > max_filesize then
-                            return true
-                        end
-                    end,
-                },
-                indent = { enable = true },
+                callback = function()
+                    -- Syntax highlighting (including injections)
+                    vim.treesitter.start()
+                end,
             })
         end,
     },

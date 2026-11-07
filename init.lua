@@ -35,3 +35,4 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Load plugins (empty for now, add specs to lua/plugins/ as you go)
 require("lazy").setup("plugins")
+require("config.autocmds")

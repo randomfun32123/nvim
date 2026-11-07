@@ -2,8 +2,11 @@ return {
     {
         "folke/which-key.nvim",
         event = "VeryLazy",
-        config = function()
+        config = function(_, opts)
             local wk = require("which-key")
+
+            require("which-key.plugins.presets").operators["v"] = nil
+            require("which-key").setup(opts)
 
             wk.setup({
                 preset = "modern",

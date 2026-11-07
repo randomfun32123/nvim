@@ -104,6 +104,26 @@ return {
                 capabilities = capabilities,
                 on_attach = on_attach,
                 handlers = handlers,
+
+                settings = {
+                    python = {
+                        analysis = {
+                            -- disableOrganizeImports = true,
+                            -- (optional) disable pyright linting entirely if you
+                            -- want Ruff to be the sole linter:
+                            diagnosticSeverityOverrides = {
+                                reportUnusedImport = "none",
+                                reportUnusedVariable = "none",
+                            },
+                        }
+                    }
+                }
+            })
+
+            vim.lsp.config("ruff", {
+                capabilities = capabilities,
+                on_attach = on_attach,
+                handlers = handlers,
             })
 
             vim.lsp.config("bashls", {
@@ -149,7 +169,7 @@ return {
             })
 
             -- Enable all configured servers
-            vim.lsp.enable({ "clangd", "pyright", "bashls", "lua_ls", "jdtls", "rust_analyzer", "dockerls" })
+            vim.lsp.enable({ "clangd", "pyright", "bashls", "lua_ls", "jdtls", "rust_analyzer", "dockerls", "ruff" })
         end,
     },
 
@@ -216,6 +236,7 @@ return {
                         })[entry.source.name]
                         return item
                     end,
+                },
 
                 enabled = function()
                     local context = require("cmp.config.context")
@@ -231,7 +252,6 @@ return {
                     end
                     return true
                 end,
-                },
             })
 
             cmp.setup.cmdline({ "/", "?" }, {
