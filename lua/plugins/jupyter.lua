@@ -83,15 +83,14 @@ return {
                 vim.notify("molten: cursor is not inside a fenced code block", vim.log.levels.WARN)
             end
 
-            vim.keymap.set("n", "<localleader>je", molten_eval_cell, { desc = "Molten: evaluate current cell" })
-
-            vim.keymap.set("n", "<localleader>ji", ":MoltenInit<CR>",                 { desc = "Molten: init kernel" })
+            vim.keymap.set("n", "<localleader>je", molten_eval_cell,                   { desc = "Molten: evaluate current cell" })
+            vim.keymap.set("n", "<localleader>ji", ":MoltenInit<CR>",                  { desc = "Molten: init kernel" })
             vim.keymap.set("n", "<localleader>jl", ":MoltenEvaluateLine<CR>",          { desc = "Molten: eval line" })
             vim.keymap.set("v", "<localleader>jr", ":<C-u>MoltenEvaluateVisual<CR>gv", { desc = "Molten: eval visual" })
             vim.keymap.set("n", "<localleader>jc", ":MoltenReevaluateCell<CR>",        { desc = "Molten: re-eval cell" })
             vim.keymap.set("n", "<localleader>jo", ":noautocmd MoltenEnterOutput<CR>", { desc = "Molten: open output" })
             vim.keymap.set("n", "<localleader>jd", ":MoltenDelete<CR>",                { desc = "Molten: delete output" })
-            vim.keymap.set("n", "<localleader>ji", ":MoltenInit<CR>",                 { desc = "Molten: init kernel" })
+            vim.keymap.set("n", "<localleader>ji", ":MoltenInit<CR>",                  { desc = "Molten: init kernel" })
             vim.keymap.set("n", "<localleader>jx", ":MoltenInterrupt<CR>",             { desc = "Molten: interrupt kernel" })
             vim.keymap.set("n", "<localleader>jR", ":MoltenRestart!<CR>",              { desc = "Molten: restart kernel" })
         end,
@@ -122,4 +121,40 @@ return {
             end,
         }
     },
+
+    {
+    "quarto-dev/quarto-nvim",
+        dependencies = {
+            "jmbuhr/otter.nvim", -- for LSP features in code chunks
+        },
+        ft = { "markdown" },
+        config = function()
+            require("quarto").setup({
+                lspFeatures = {
+                    languages = { "python" }, -- add others if you use them
+                    chunks = "all",
+                    diagnostics = { enabled = true },
+                    completion = { enabled = true },
+                },
+                codeRunner = {
+                    enabled = true,
+                    default_method = "molten",
+                },
+            })
+
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = "markdown",
+                callback = function()
+                    -- Using the built-in command is the simplest approach
+                    vim.cmd("QuartoActivate")
+
+                    -- Alternatively, you can call the function directly:
+                    -- require("quarto").activate()
+                end,
+            })
+
+            local runner = require("quarto.runner")
+            vim.keymap.set("n", "<localleader>jA", runner.run_all, { desc = "Run all cells" })
+        end,
+    }
 }
